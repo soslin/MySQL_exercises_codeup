@@ -377,10 +377,13 @@ WHERE rating IN ('G', 'PG-13', 'NC-17');
  SELECT payment_date, amount
  FROM payment
  WHERE amount > 5
+ ORDER BY payment_date
  LIMIT 1001 OFFSET 999;
     
 SELECT * FROM customer
-LIMIT 101 OFFSET 100;
+ORDER BY customer_id
+LIMIT 99 OFFSET 100
+;
     
     
 --  ORDER BY statement
@@ -466,6 +469,36 @@ LIMIT 101 OFFSET 100;
 	LEFT JOIN city AS c
 		ON c.city_id = a.city_id;
     
+    
+    -- 1. What is the average replacement cost of a film? Does this change depending on the rating of the film?
+    
+    SELECT AVG(replacement_cost) FROM film;
+    
+    SELECT rating, AVG(replacement_cost) FROM film
+    GROUP BY rating;
+    
+    -- 2. How many different films of each genre are in the database?
+    SELECT name, count(f.title)
+    FROM category AS c
+    JOIN film_category AS fc
+		ON c.category_id = fc.category_id
+	JOIN film AS f
+		ON f.film_id = fc.category_id
+    GROUP BY name;
+    
+    -- 3. What are the 5 frequently rented films?
+    SELECT f.title, count(r.rental_id)
+    FROM rental AS r
+    JOIN inventory AS i
+		ON r.inventory_id = i.inventory_id
+	JOIN film AS f
+		ON f.film_id = i.film_id
+	GROUP BY f.title
+    ORDER BY COUNT(r.rental_id) DESC
+    LIMIT 5;
+		
+    -- 4. What are the most most profitable films (in terms of gross revenue)?
+    SELECT f.title, SUM(amount)
     
     
     
