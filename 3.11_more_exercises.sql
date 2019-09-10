@@ -330,7 +330,6 @@ SELECT staff_id, first_name, last_name, address_id, picture, email, store_id, ac
     FROM address
 	WHERE district IN ('California', 'England', 'Taipei', 'West Java');
     
-    
     SELECT payment_id, amount, payment_date
     FROM payment
     WHERE DATE(payment_date) IN ('2005-05-25', '2005-05-27', '2005-05-29');
@@ -343,24 +342,129 @@ WHERE rating IN ('G', 'PG-13', 'NC-17');
 -- Select the following columns from the film table for films where the length of the description is between 100 and 120.
 -- Hint: total_rental_cost = rental_duration * rental_rate 
     
+    SELECT * FROM payment
+    WHERE payment_date BETWEEN '2005-05-25 00:00:00' AND '2005-05-25 23:59:59';
+    
+    SELECT * FROM film
+    WHERE LENGTH(description) BETWEEN 100 and 120;
     
     
+-- LIKE operator
+-- Select the following columns from the film table for rows where the description begins with "A Thoughtful".
+-- Select the following columns from the film table for rows where the description ends with the word "Boat".
+-- Select the following columns from the film table where the description contains the word "Database" and the 
+-- 	length of the film is greater than 3 hours.
+    
+    SELECT * FROM film
+    WHERE description LIKE 'A Thoughtful%';
+    
+    SELECT * FROM film
+    WHERE description LIKE '%Boat';
+    
+    SELECT * FROM film
+    WHERE description LIKE '%Database%' AND length > 180;
     
     
+--     LIMIT Operator
+-- Select all columns from the payment table and only include the first 20 rows.
+-- Select the payment date and amount columns from the payment table for rows where the payment amount is 
+-- greater than 5, and only select rows whose zero-based index in the result set is between 1000-2000.
+-- Select all columns from the customer table, limiting results to those where the zero-based index is between 101-200.
+    
+ SELECT * FROM payment
+ LIMIT 20;
+ 
+ SELECT payment_date, amount
+ FROM payment
+ WHERE amount > 5
+ LIMIT 1001 OFFSET 999;
+    
+SELECT * FROM customer
+LIMIT 101 OFFSET 100;
     
     
+--  ORDER BY statement
+-- Select all columns from the film table and order rows by the length field in ascending order.
+-- Select all distinct ratings from the film table ordered by rating in descending order.
+-- Select the payment date and amount columns from the payment table for the first 20 payments ordered by payment amount in descending order.
+-- Select the title, description, special features, length, and rental duration columns from the film table for the first 
+-- 10 films with behind the scenes footage under 2 hours in length and a rental duration between 5 and 7 days, ordered by length 
+-- in descending order.   
+    
+    SELECT * FROM film
+    ORDER BY length ASC;
+    
+    SELECT DISTINCT rating FROM film
+    ORDER BY rating DESC;
+    
+    SELECT payment_date, amount
+    FROM payment
+    ORDER BY amount DESC
+    LIMIT 20;
+    
+    SELECT title, description, special_features, length, rental_duration
+    FROM film
+    WHERE (special_features LIKE '%Behind the Scenes%' AND length <120) AND rental_duration BETWEEN 5 AND 7
+    ORDER BY length DESC
+    LIMIT 10;
     
     
+-- JOINs
+-- Select customer first_name/last_name and actor first_name/last_name columns from performing a left join between the 
+-- customer and actor column on the last_name column in each table. (i.e. customer.last_name = actor.last_name)
+-- Label customer first_name/last_name columns as customer_first_name/customer_last_name
+-- Label actor first_name/last_name columns in a similar fashion.
+    
+    SELECT CONCAT(c.first_name, ' ', c.last_name) AS 'customer_first_name/customer_last_name', 
+			CONCAT(a.first_name, ' ', a.last_name) AS 'actor_first_name/actor_last_name'
+    FROM customer AS c
+    LEFT JOIN actor AS a
+		ON c.last_name = a.last_name;
+	
+    -- Select the customer first_name/last_name and actor first_name/last_name columns from performing a /right join between the 
+--     customer and actor column on the last_name column in each table. (i.e. customer.last_name = actor.last_name)
+    
+   SELECT CONCAT(c.first_name, ' ', c.last_name) AS 'customer_first_name/customer_last_name', 
+			CONCAT(a.first_name, ' ', a.last_name) AS 'actor_first_name/actor_last_name'
+    FROM customer AS c
+    RIGHT JOIN actor AS a
+		ON c.last_name = a.last_name;
+	
+    -- Select the customer first_name/last_name and actor first_name/last_name columns from performing an inner join between 
+--     the customer and actor column on the last_name column in each table. (i.e. customer.last_name = actor.last_name)
+    
+    SELECT CONCAT(c.first_name, ' ', c.last_name) AS 'customer_first_name/customer_last_name', 
+			CONCAT(a.first_name, ' ', a.last_name) AS 'actor_first_name/actor_last_name'
+    FROM customer AS c
+    JOIN actor AS a
+		ON c.last_name = a.last_name;
     
     
+   --  Select the city name and country name columns from the city table, performing a left join with the country table to get 
+--     the country name column.
+
+    SELECT city, c.country
+    FROM city
+    LEFT JOIN country AS c
+		ON city.country_id = c.country_id;
     
+    -- Select the title, description, release year, and language name columns from the film table, performing a left 
+--     join with the language table to get the "language" column. Label the language.name column as "language"
     
+    SELECT title, description, release_year, l.name AS language
+    FROM film as f
+    LEFT JOIN language AS l
+		ON f.language_id = l.language_id;
     
+    -- Select the first_name, last_name, address, address2, city name, district, and postal code columns from the staff table, 
+--     performing 2 left joins with the address table then the city table to get the address and city related columns.
     
-    
-    
-    
-    
+    SELECT s.first_name, s.last_name, a.address, a.address2, c.city, a.district, a.postal_code
+    FROM staff AS s
+    LEFT JOIN address AS a
+		ON s.address_id = a.address_id
+	LEFT JOIN city AS c
+		ON c.city_id = a.city_id;
     
     
     
